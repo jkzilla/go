@@ -13,8 +13,19 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:11
     steps:
+    - restore_cache:
+          keys:
+            - go-modules-v1-{{ checksum "go.sum" }}
+            - go-modules-v1
+      # get dependencies here with `go mod download` or implicitly
+      # with `go build` or `go test`
+
       - checkout
 
       # specify any bash command here prefixed with `run: `
       - run: go mod download
       - run: go test -v ./...
+      - save_cache:
+          key: go-modules-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"        
